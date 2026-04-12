@@ -1,4 +1,4 @@
-import { fontBangla } from '@/app/layout';
+import { fontBangla } from '@/app/fonts';
 import Image from 'next/image';
 import React from 'react';
 

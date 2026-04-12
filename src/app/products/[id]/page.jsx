@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { FaStar, FaShoppingCart, FaTruck, FaShieldAlt, FaUndo, FaQuestionCircle } from "react-icons/fa";
 import { getSingleProduct } from "@/actions/server/product";
+import CartButton from "@/components/buttons/CartButton";
 
 const ProductDetails = async ({ params }) => {
   // ✅ Next.js 15+ Compatibility: await params
@@ -122,10 +123,7 @@ const ProductDetails = async ({ params }) => {
           </div>
 
           <div className="grid grid-cols-2 gap-4">
-            <button className="btn btn-primary btn-lg rounded-2xl shadow-lg hover:shadow-primary/50 transition-all flex-1 gap-2">
-              <FaShoppingCart />
-              Add to Cart
-            </button>
+            <CartButton product={product}></CartButton>
             <button className="btn btn-secondary btn-lg rounded-2xl shadow-lg hover:shadow-secondary/50 transition-all flex-1">
               Buy Now
             </button>
@@ -210,4 +208,4 @@ const ProductDetails = async ({ params }) => {
   );
 };
 
-export default ProductDetails;
+export default ProductDetails;

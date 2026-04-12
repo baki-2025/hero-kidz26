@@ -1,18 +1,18 @@
 import { Geist, Geist_Mono, Poppins } from "next/font/google";
 import localFont from 'next/font/local'
+import { fontBangla } from "./fonts";
 import "./globals.css";
+import { Toaster } from "react-hot-toast";
 import Navbar from "@/components/layouts/Navbar";
 import Footer from "@/components/layouts/Footer";
 
 const poppins = Poppins(
   {
-   weight: ["100","200","400","600","800"],
+    weight: ["100", "200", "400", "600", "800"],
   }
 )
 
- export const fontBangla = localFont({
-  src: "./../fonts/mayaboti-normal.ttf"
-})
+
 
 
 
@@ -35,8 +35,10 @@ export const metadata = {
     'online toy store',
   ],
 
-  authors: [{ name: 'Abdullah Baki' }],
-  creator: 'Abdullah Baki',
+  authors: [{ name: "HeroKidz Team" }],
+  creator: 'HeroKidz',
+  publisher: 'HeroKidz',
+
 
   icons: {
     icon: 'https://i.ibb.co.com/nqdjJ4ds/image.png',
@@ -91,17 +93,18 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body className={`${poppins.className}  antialiased`}>
+        <Toaster position="top-center" reverseOrder={false} />
         <header className="py-2 md:w-11/12 mx-auto">
           <Navbar></Navbar>
         </header>
         <main className="py-2 md:w-11/12 mx-auto">
-        {children}
+          {children}
         </main>
-        
+
         <footer>
           <Footer></Footer>
         </footer>
-        </body>
+      </body>
     </html>
   );
 }

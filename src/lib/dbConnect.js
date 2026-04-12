@@ -6,6 +6,8 @@ const dbname = process.env.DBNAME;
 // ✅ EXPORT collections properly
 export const collections = {
   PRODUCTS: "products",
+  CART: "cart",
+  USERS: "users",
 };
 
 const client = new MongoClient(uri, {

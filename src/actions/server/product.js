@@ -1,4 +1,4 @@
-      "use server"
+"use server"
 
 import { dbConnect, collections } from "@/lib/dbConnect";
 import { ObjectId } from "mongodb";
@@ -15,8 +15,8 @@ export const getSingleProduct = async (id) => {
 
   const collection = await dbConnect(collections.PRODUCTS);
   const product = await collection.findOne({ _id: new ObjectId(id) });
-  
+
   if (!product) return null;
   // ✅ Serialize _id for Client Components
-  return { ...product, _id: product._id.toString() };
+  return { ...product, _id: product._id.toString() } || {};
 };

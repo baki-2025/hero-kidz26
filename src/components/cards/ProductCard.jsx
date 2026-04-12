@@ -1,8 +1,7 @@
-"use client";
-
-import Image from "next/image";
 import Link from "next/link";
-import { FaStar, FaShoppingCart, FaEye } from "react-icons/fa";
+import CartButton from "../buttons/CartButton";
+import Image from "next/image";
+import { FaEye, FaStar } from "react-icons/fa";
 
 const ProductCard = ({ product }) => {
   const { _id, title, image, price, discount, ratings, reviews, sold } = product;
@@ -12,7 +11,7 @@ const ProductCard = ({ product }) => {
 
   return (
     <div className="card bg-base-100 shadow-sm border border-base-200 hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 group overflow-hidden">
-      
+
       {/* Image Container with Link */}
       <Link href={`/products/${productId}`} className="relative block overflow-hidden">
         <figure className="px-4 pt-4">
@@ -33,7 +32,7 @@ const ProductCard = ({ product }) => {
 
       {/* Body */}
       <div className="card-body p-5">
-        
+
         {/* Title */}
         <Link href={`/products/${productId}`}>
           <h2 className="card-title text-base font-bold line-clamp-2 min-h-[3rem] hover:text-primary transition-colors">
@@ -71,10 +70,7 @@ const ProductCard = ({ product }) => {
             <FaEye />
             View Details
           </Link>
-          <button className="btn btn-primary btn-sm w-full gap-2 rounded-xl">
-            <FaShoppingCart />
-            Add to Cart
-          </button>
+          <CartButton product={product} size="sm" className="w-full" />
         </div>
 
       </div>

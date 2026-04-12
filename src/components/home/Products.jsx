@@ -3,7 +3,7 @@ import ProductCard from '../cards/ProductCard';
 
 const Products = async () => {
     const products = await getProducts();
-    
+
     return (
         <div>
             <h2 className='text-center text-4xl font-bold mb-10'>Our Products</h2>
