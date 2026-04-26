@@ -25,11 +25,13 @@ const Banner = () => {
             {/* Right Side */}
             <div className='flex-1 flex justify-center lg:justify-end'>
                 <Image 
+                    priority
                     alt="Buy every toy with upto 15% discount" 
                     src={"/assets/hero.png"} 
                     width={500} 
                     height={400}
-                    className='w-[250px] sm:w-[350px] lg:w-[500px] h-auto'
+                    style={{ width: 'auto', height: 'auto' }}
+                    className='w-[250px] sm:w-[350px] lg:w-[500px]'
                 />
             </div>
 

@@ -1,16 +1,17 @@
-import { Geist, Geist_Mono, Poppins } from "next/font/google";
+import { Poppins } from "next/font/google";
 import localFont from 'next/font/local'
 import { fontBangla } from "./fonts";
 import "./globals.css";
-import { Toaster } from "react-hot-toast";
+import Providers from "./providers";
 import Navbar from "@/components/layouts/Navbar";
 import Footer from "@/components/layouts/Footer";
 
-const poppins = Poppins(
-  {
-    weight: ["100", "200", "400", "600", "800"],
-  }
-)
+const poppins = Poppins({
+  weight: ["100", "200", "400", "600", "800"],
+  subsets: ["latin"],
+  display: "swap",
+  preload: false,
+});
 
 
 
@@ -93,17 +94,18 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body className={`${poppins.className}  antialiased`}>
-        <Toaster position="top-center" reverseOrder={false} />
-        <header className="py-2 md:w-11/12 mx-auto">
-          <Navbar></Navbar>
-        </header>
-        <main className="py-2 md:w-11/12 mx-auto">
-          {children}
-        </main>
+        <Providers>
+          <header className="py-2 md:w-11/12 mx-auto">
+            <Navbar></Navbar>
+          </header>
+          <main className="py-2 md:w-11/12 mx-auto">
+            {children}
+          </main>
 
-        <footer>
-          <Footer></Footer>
-        </footer>
+          <footer>
+            <Footer></Footer>
+          </footer>
+        </Providers>
       </body>
     </html>
   );

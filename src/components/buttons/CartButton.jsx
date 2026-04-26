@@ -1,9 +1,8 @@
 "use client"
 import { usePathname, useRouter } from "next/navigation";
-import toast from "react-hot-toast";
 import { FaShoppingCart } from "react-icons/fa";
 
-const CartButton = ({ product }) => {
+const CartButton = ({ product, size, className = "" }) => {
     const isLogin = false;
     const router = useRouter();
     const path = usePathname();
@@ -16,12 +15,10 @@ const CartButton = ({ product }) => {
     };
 
     return (
-        <div>
-            <button onClick={Add2Cart} className="btn btn-primary  w-full flex gap-2 rounded-2xl">
-                <FaShoppingCart />
-                Add to Cart
-            </button>
-        </div>
+        <button onClick={Add2Cart} className={`btn btn-primary flex justify-center items-center ${size ? `btn-${size}` : ''} ${className}`}>
+            <FaShoppingCart />
+            Add to Cart
+        </button>
     );
 };
 

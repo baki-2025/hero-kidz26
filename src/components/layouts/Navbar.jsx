@@ -1,27 +1,35 @@
+"use client";
+
 import React from 'react';
 import Logo from './Logo';
 import Link from 'next/link';
 import NavLink from '../buttons/NavLink';
-import { BsCart2 } from "react-icons/bs";
+import { signOut, useSession } from 'next-auth/react';
+import { BsCart2 } from 'react-icons/bs';
 
 const Navbar = () => {
+  const { data: session, status } = useSession();
+
   const nav = <>
-  <li>
-    <NavLink href={"/"}>Home</NavLink>
-     </li>
-     <li>
-    <NavLink href={"/products"}>Products</NavLink>
+    <li>
+      <NavLink href="/">Home</NavLink>
     </li>
     <li>
-    <NavLink href={"/blogs"}>Blogs</NavLink>
+      <NavLink href="/products">Products</NavLink>
     </li>
     <li>
-    <NavLink href={"/contact"}>Contact</NavLink>
+      <NavLink href="/blogs">Blogs</NavLink>
     </li>
-    
- 
-  </>
-    return (
+    <li>
+      <NavLink href="/contact">Contact</NavLink>
+    </li>
+  </>;
+
+  const handleLogout = async () => {
+    await signOut({ callbackUrl: '/' });
+  };
+
+  return (
         <div>
            <div className="navbar bg-base-100">
   <div className="navbar-start">
@@ -43,10 +51,29 @@ const Navbar = () => {
     </ul>
   </div>
   <div className="navbar-end space-x-4">
-    <Link href={"/cart"} className='btn btn-primary'>
-    <BsCart2 />
+    <Link href="/cart" className="btn btn-primary">
+      <BsCart2 />
     </Link>
-   <Link href={"/login"}> <button className='btn btn-primary btn-outline'>Login</button></Link>
+    {status === 'loading' ? (
+      <button className="btn btn-outline btn-disabled">Loading...</button>
+    ) : session?.user ? (
+      <>
+        <span className="hidden sm:inline mr-2 text-sm text-base-content/70">
+          Hi, {session.user.name ?? session.user.email}
+        </span>
+        <button
+          type="button"
+          onClick={handleLogout}
+          className="btn btn-primary btn-outline"
+        >
+          Logout
+        </button>
+      </>
+    ) : (
+      <Link href="/login">
+        <button className="btn btn-primary btn-outline">Login</button>
+      </Link>
+    )}
   </div>
 </div>
         </div>

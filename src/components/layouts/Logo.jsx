@@ -6,11 +6,12 @@ const Logo = () => {
     return (
         <Link href={"/"} className='flex items-center gap-1'>
            <Image 
+           priority
            alt='hero-hero-kidz' 
            src={"/assets/logo.png"}
            width={50}
            height={40}
-           style={{ height: 'auto' }}
+           style={{ width: 'auto', height: 'auto' }}
            />
             
            <h2 className='text-xl font-bold'>Hero Kidz</h2>
