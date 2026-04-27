@@ -5,10 +5,16 @@ import CartItem from "@/components/cart/CartItem";
 const fetchCartItems = async () => {
   const cartCollection = await dbConnect(collections.CART);
 
-  return await cartCollection
+  const items = await cartCollection
     .find({ userEmail: "guest@example.com" })
     .sort({ addedAt: -1 })
     .toArray();
+
+  return items.map(item => ({
+    ...item,
+    _id: item._id.toString(),
+    addedAt: item.addedAt ? item.addedAt.toISOString() : null
+  }));
 };
 
 export default async function CartPage() {
@@ -16,19 +22,19 @@ export default async function CartPage() {
   const itemCount = cartItems.length;
 
   return (
-    <section className="min-h-screen bg-base-100 py-10">
-      <div className="w-11/12 max-w-6xl mx-auto">
+    <section className="min-h-screen bg-base-100 py-10 font-sans">
+      <div className="w-11/12 max-w-4xl mx-auto">
         {/* Header */}
-        <div className="mb-10">
-          <div className="flex items-center gap-4 mb-3">
-            <div className="w-1.5 h-12 bg-primary rounded-full"></div>
-            <h1 className="text-5xl font-extrabold text-base-content">
+        <div className="mb-6">
+          <div className="flex items-center gap-4 mb-2">
+            <div className="w-1.5 h-10 bg-[#FF4500]"></div>
+            <h1 className="text-[32px] font-extrabold text-base-content tracking-tight">
               My Cart
             </h1>
           </div>
 
-          <p className="text-lg text-base-content/70 ml-6">
-            <span className="font-bold text-primary">{itemCount}</span>{" "}
+          <p className="text-[15px] text-base-content/70 mt-4">
+            <span className="font-bold text-[#FF4500]">{itemCount}</span>{" "}
             {itemCount === 1 ? "Item" : "Items"} Found in the Cart
           </p>
         </div>
@@ -46,7 +52,7 @@ export default async function CartPage() {
             </Link>
           </div>
         ) : (
-          <div className="space-y-5">
+          <div className="space-y-4">
             {cartItems.map((item) => (
               <CartItem
                 key={item._id.toString()}
