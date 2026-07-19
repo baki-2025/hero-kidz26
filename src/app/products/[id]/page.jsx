@@ -1,13 +1,113 @@
-
-
 import Image from "next/image";
 import Link from "next/link";
 import { FaStar, FaShoppingCart, FaTruck, FaShieldAlt, FaUndo, FaQuestionCircle } from "react-icons/fa";
 import { getSingleProduct } from "@/actions/server/product";
 import CartButton from "@/components/buttons/CartButton";
 
+
+export async function generateMetadata({ params }) {
+  const { id } = await params;
+  const product = await getSingleProduct(id);
+
+  if (!product) {
+    return {
+      title: "Product Not Found | HeroKidz",
+      description: "The requested product could not be found.",
+      robots: {
+        index: false,
+        follow: false,
+      },
+    };
+  }
+
+  const {
+    title,
+    bangla,
+    description,
+    image,
+  } = product;
+
+  return {
+    metadataBase: new URL("https://hero-kidz-peach.vercel.app"),
+
+    title: `${title} | HeroKidz`,
+
+    description:
+      description?.slice(0, 160) ||
+      `${title} (${bangla}) - Buy premium kids toys online in Bangladesh.`,
+
+    keywords: [
+      title,
+      bangla,
+      "HeroKidz",
+      "Kids Toys",
+      "Toy Shop Bangladesh",
+      "Baby Toys",
+      "Educational Toys",
+      "Learning Toys",
+      "Online Toy Store",
+    ],
+
+    authors: [
+      {
+        name: "HeroKidz Team",
+      },
+    ],
+
+    creator: "HeroKidz",
+    publisher: "HeroKidz",
+
+    icons: {
+      icon: "https://i.ibb.co.com/nqdjJ4ds/image.png",
+    },
+
+    alternates: {
+      canonical: `https://hero-kidz-peach.vercel.app/products/${id}`,
+    },
+
+    openGraph: {
+      title: `${title} | HeroKidz`,
+      description:
+        description?.slice(0, 180) ||
+        `${title} is available at HeroKidz.`,
+
+      url: `https://hero-kidz-peach.vercel.app/products/${id}`,
+
+      siteName: "HeroKidz",
+
+      images: [
+        {
+          url: image,
+          width: 1200,
+          height: 630,
+          alt: title,
+        },
+      ],
+
+      locale: "en_US",
+      type: "website",
+    },
+
+    twitter: {
+      card: "summary_large_image",
+
+      title: `${title} | HeroKidz`,
+
+      description:
+        description?.slice(0, 180) ||
+        `${title} - Buy online from HeroKidz.`,
+
+      images: [image],
+    },
+
+    robots: {
+      index: true,
+      follow: true,
+    },
+  };
+}
+
 const ProductDetails = async ({ params }) => {
-  // ✅ Next.js 15+ Compatibility: await params
   const { id } = await params;
   const product = await getSingleProduct(id);
 

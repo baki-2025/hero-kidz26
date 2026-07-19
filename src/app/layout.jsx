@@ -13,10 +13,6 @@ const poppins = Poppins({
   preload: false,
 });
 
-
-
-
-
 export const metadata = {
   metadataBase: new URL('https://hero-kidz-peach.vercel.app'),
 
