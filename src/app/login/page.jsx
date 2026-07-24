@@ -32,7 +32,7 @@ const LoginPage = () => {
 
                 {/* Footer Link */}
                 <p className="text-center text-sm text-base-content/70 mt-6">
-                    Don't have an account?{' '}
+                    Don&apos;t have an account?{' '}
                     <Link 
                         href="/register" 
                         className="font-bold text-primary hover:underline transition-all"
