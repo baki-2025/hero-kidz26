@@ -1,7 +1,7 @@
 import Link from "next/link";
 import CartButton from "../buttons/CartButton";
 import Image from "next/image";
-import { FaEye, FaStar } from "react-icons/fa";
+import { FaStar } from "react-icons/fa";
 
 const ProductCard = ({ product, priority = false }) => {
   const { _id, title, image, price, discount, ratings, reviews, sold } = product;
@@ -67,11 +67,12 @@ const ProductCard = ({ product, priority = false }) => {
 
         {/* Buttons Group */}
         <div className="card-actions flex-col w-full gap-2 mt-auto">
+          <CartButton product={product} className="btn btn-outline btn-primary w-full gap-2 rounded-lg text-xs min-h-[2rem] h-8 px-2 transition-all" />
           <Link href={`/products/${productId}`} className="btn btn-outline btn-primary w-full gap-2 rounded-lg text-xs min-h-[2rem] h-8 px-2 transition-all">
-            <FaEye />
+            
             View Details
           </Link>
-          <CartButton product={product} className="w-full text-xs min-h-[2rem] h-8 px-2 rounded-lg gap-2 transition-all" />
+          
         </div>
 
       </div>

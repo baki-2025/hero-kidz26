@@ -1,26 +1,47 @@
-"use client"
+"use client";
+import { handleCart } from "@/actions/server/cart";
+import { useSession } from "next-auth/react";
+import { usePathname } from "next/navigation";
+import { useRouter } from "next/navigation";
+import React, { useState } from "react";
+import { FaCartPlus } from "react-icons/fa";
+import Swal from "sweetalert2";
 
-import { usePathname, useRouter } from "next/navigation";
-import { FaShoppingCart } from "react-icons/fa";
+const CartButton = ({ product }) => {
+  const session = useSession();
+  const path = usePathname();
+  const router = useRouter();
+  const [isLoading, setIsLoading] = useState(false);
+  const islogin = session?.status == "authenticated";
 
-const CartButton = ({ product, size, className = "" }) => {
-    const isLogin = false;
-    const router = useRouter();
-    const path = usePathname();
-    const Add2Cart = () => {
-        if (isLogin) alert(product._id);
-        else {
-            router.push(`/login?callbackUrl=${path}`);
-        }
+  const handleAdd2Cart = async () => {
+    setIsLoading(true);
+    if (islogin) {
+      const result = await handleCart({ product, inc: true });
+      if (result.success) {
+        Swal.fire("Added to Cart", product?.title, "success");
+      } else {
+        Swal.fire("Opps", "Something Wrong Happen", "error");
+      }
+      setIsLoading(false);
+    } else {
+      router.push(`/login?callbackUrl=${path}`);
+      setIsLoading(false);
+    }
+  };
 
-    };
-
-    return (
-        <button onClick={Add2Cart} className={`btn btn-primary flex justify-center items-center ${size ? `btn-${size}` : ''} ${className}`}>
-            <FaShoppingCart />
-            Add to Cart
-        </button>
-    );
+  return (
+    <div>
+      <button
+        disabled={session.status == "loading" || isLoading}
+        onClick={handleAdd2Cart}
+        className="btn btn-primary w-full gap-2 rounded-lg text-xs min-h-[2rem] h-8 px-2 transition-all"
+      >
+        <FaCartPlus />
+        Add to Cart
+      </button>
+    </div>
+  );
 };
 
 export default CartButton;

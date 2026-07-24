@@ -1,69 +1,81 @@
-"use server"
+"use server";
 
+import { authOptions } from "@/lib/authOption";
+import { getServerSession } from "next-auth";
 import { dbConnect, collections } from "@/lib/dbConnect";
 import { ObjectId } from "mongodb";
-import { revalidatePath } from "next/cache";
 
-export const addToCart = async (productData) => {
-  try {
-    const cartCollection = await dbConnect(collections.CART);
-    
-    const cartItem = {
-      ...productData,
-      quantity: productData.quantity || 1,
-      addedAt: new Date(),
-      userEmail: "guest@example.com" 
-    };
-
-    const result = await cartCollection.insertOne(cartItem);
-    
-    if (result.insertedId) {
-      revalidatePath("/cart");
-      return { success: true, message: "Added to cart successfully!" };
-    } else {
-      return { success: false, message: "Failed to add to cart." };
-    }
-  } catch (error) {
-    console.error("Error adding to cart:", error);
-    return { success: false, message: "An error occurred while adding to cart." };
-  }
+const getUser = async () => {
+  const session = await getServerSession(authOptions);
+  return session?.user;
 };
 
-export const updateCartQuantity = async (itemId, action) => {
-  try {
-    const cartCollection = await dbConnect(collections.CART);
-    const update = action === "increase" ? { $inc: { quantity: 1 } } : { $inc: { quantity: -1 } };
-    
-    const result = await cartCollection.updateOne(
-      { _id: new ObjectId(itemId) },
-      update
-    );
+// Add to Cart
+export const handleCart = async ({ product, inc = true }) => {
+  const cartCollection = await dbConnect(collections.CART);
+  const user = await getUser();
 
-    if (result.modifiedCount > 0) {
-      revalidatePath("/cart");
-      return { success: true, message: `Quantity ${action}d successfully!` };
-    } else {
-      return { success: false, message: "Failed to update quantity." };
-    }
-  } catch (error) {
-    console.error("Error updating quantity:", error);
-    return { success: false, message: "An error occurred while updating quantity." };
+  if (!user) return { success: false };
+
+  const query = {
+    email: user.email,
+    productId: product._id,
+  };
+
+  const isAdded = await cartCollection.findOne(query);
+
+  if (isAdded) {
+    const result = await cartCollection.updateOne(query, {
+      $inc: {
+        quantity: inc ? 1 : -1,
+      },
+    });
+
+    return { success: result.modifiedCount > 0 };
   }
+
+  const newData = {
+    productId: product._id,
+    email: user.email,
+    title: product.title,
+    quantity: 1,
+    image: product.image,
+    price: product.price - (product.price * product.discount) / 100,
+    username: user.name,
+  };
+
+  const result = await cartCollection.insertOne(newData);
+
+  return { success: result.acknowledged };
 };
 
-export const removeFromCart = async (itemId) => {
-  try {
-    const cartCollection = await dbConnect(collections.CART);
-    const result = await cartCollection.deleteOne({ _id: new ObjectId(itemId) });
+// Update Cart Quantity
+export const updateCartQuantity = async (cartId, quantity) => {
+  const cartCollection = await dbConnect(collections.CART);
 
-    if (result.deletedCount > 0) {
-      revalidatePath("/cart");
-      return { success: true, message: "Item removed from cart!" };
-    } else {
-      return { success: false, message: "Failed to remove item." };
+  const result = await cartCollection.updateOne(
+    { _id: new ObjectId(cartId) },
+    {
+      $set: {
+        quantity,
+      },
     }
-  } catch (error) {
-    console.error("Error removing from cart:", error);
-    return { success: false, message: "An error occurred while removing item." };
-  }
+  );
+
+  return {
+    success: result.modifiedCount > 0,
+  };
+};
+
+// Remove Cart Item
+export const removeFromCart = async (cartId) => {
+  const cartCollection = await dbConnect(collections.CART);
+
+  const result = await cartCollection.deleteOne({
+    _id: new ObjectId(cartId),
+  });
+
+  return {
+    success: result.deletedCount > 0,
+  };
 };
