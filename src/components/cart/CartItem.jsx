@@ -1,5 +1,4 @@
 "use client";
-
 import Image from "next/image";
 import { Trash2, Minus, Plus } from "lucide-react";
 import { updateCartQuantity, removeFromCart } from "@/actions/server/cart";

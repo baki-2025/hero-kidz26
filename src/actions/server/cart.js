@@ -1,5 +1,4 @@
 "use server";
-
 import { authOptions } from "@/lib/authOption";
 import { getServerSession } from "next-auth";
 import { dbConnect, collections } from "@/lib/dbConnect";

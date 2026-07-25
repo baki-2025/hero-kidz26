@@ -35,7 +35,7 @@ const CartButton = ({ product }) => {
       <button
         disabled={session.status == "loading" || isLoading}
         onClick={handleAdd2Cart}
-        className="btn btn-primary w-full gap-2 rounded-lg text-xs min-h-[2rem] h-8 px-2 transition-all"
+        className="btn btn-primary w-full flex gap-2"
       >
         <FaCartPlus />
         Add to Cart

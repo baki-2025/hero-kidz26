@@ -66,11 +66,10 @@ const ProductCard = ({ product, priority = false }) => {
         </div>
 
         {/* Buttons Group */}
-        <div className="card-actions flex-col w-full gap-2 mt-auto">
-          <CartButton product={product} className="btn btn-outline btn-primary w-full gap-2 rounded-lg text-xs min-h-[2rem] h-8 px-2 transition-all" />
-          <Link href={`/products/${productId}`} className="btn btn-outline btn-primary w-full gap-2 rounded-lg text-xs min-h-[2rem] h-8 px-2 transition-all">
-            
-            View Details
+        <div className="flex-col w-full gap-2 mt-auto">
+          <CartButton product={product} className="btn btn-primary w-full flex gap-2 " />
+          <Link href={`/products/${productId}`} className="btn btn-outline btn-primary w-full gap-2 mt-4">
+          View Details
           </Link>
           
         </div>
