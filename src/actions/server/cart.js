@@ -1,80 +1,84 @@
 "use server";
 import { authOptions } from "@/lib/authOption";
-import { getServerSession } from "next-auth";
-import { dbConnect, collections } from "@/lib/dbConnect";
 import { ObjectId } from "mongodb";
+import { getServerSession } from "next-auth";
+import { revalidatePath } from "next/cache";
+import { cache } from "react";
 
-const getUser = async () => {
-  const session = await getServerSession(authOptions);
-  return session?.user;
-};
+const { dbConnect, collections } = require("@/lib/dbConnect");
+const cartCollection = dbConnect(collections.CART);
 
-// Add to Cart
 export const handleCart = async ({ product, inc = true }) => {
   const cartCollection = await dbConnect(collections.CART);
-  const user = await getUser();
-
+  const { user } = (await getServerSession(authOptions)) || {};
   if (!user) return { success: false };
 
-  const query = {
-    email: user.email,
-    productId: product._id,
-  };
+  //getCartItem->user.email && productId
+  const query = { email: user?.email, productId: product?._id };
 
   const isAdded = await cartCollection.findOne(query);
 
   if (isAdded) {
-    const result = await cartCollection.updateOne(query, {
+    //if Exist:Update Cart
+
+    const updatedData = {
       $inc: {
         quantity: inc ? 1 : -1,
       },
-    });
+    };
 
-    return { success: result.modifiedCount > 0 };
+    const result = await cartCollection.updateOne(query, updatedData);
+    return { success: Boolean(result.modifiedCount) };
+  } else {
+    //Not Exist:insert Cart
+    const newData = {
+      productId: product?._id,
+      email: user?.email,
+      title: product.title,
+      quantity: 1,
+      image: product.image,
+      price: product.price - (product.price * product.discount) / 100,
+      username: user?.name,
+    };
+
+    const result = await cartCollection.insertOne(newData);
+    return { success: result.acknowledged };
+  }
+};
+
+export const getCart = cache(async() => {
+  const cartCollection = await dbConnect(collections.CART);
+  const { user } = (await getServerSession(authOptions)) || {};
+  if (!user) return [];
+
+  const query = { email: user?.email };
+
+  const result = await cartCollection.find(query).toArray();
+
+   return result.map((item) => ({
+    ...item,
+    _id: item._id.toString(),
+  }));
+});
+
+export const deleteItemsFromCart = async (id) => {
+  const { user } = (await getServerSession(authOptions)) || {};
+  if (!user) return {success: false};
+
+  if(id.length!= 24){
+    return{success: false};
   }
 
-  const newData = {
-    productId: product._id,
-    email: user.email,
-    title: product.title,
-    quantity: 1,
-    image: product.image,
-    price: product.price - (product.price * product.discount) / 100,
-    username: user.name,
-  };
+  const query ={_id: new ObjectId(id) }
 
-  const result = await cartCollection.insertOne(newData);
+  const result = (await cartCollection).deleteOne(query);
 
-  return { success: result.acknowledged };
-};
+  if(Boolean(result.deletedCount)){
+    revalidatePath("/cart");
+  }
 
-// Update Cart Quantity
-export const updateCartQuantity = async (cartId, quantity) => {
-  const cartCollection = await dbConnect(collections.CART);
+  return {success: Boolean(result.deletedCount) };
+  
+}
 
-  const result = await cartCollection.updateOne(
-    { _id: new ObjectId(cartId) },
-    {
-      $set: {
-        quantity,
-      },
-    }
-  );
 
-  return {
-    success: result.modifiedCount > 0,
-  };
-};
-
-// Remove Cart Item
-export const removeFromCart = async (cartId) => {
-  const cartCollection = await dbConnect(collections.CART);
-
-  const result = await cartCollection.deleteOne({
-    _id: new ObjectId(cartId),
-  });
-
-  return {
-    success: result.deletedCount > 0,
-  };
-};

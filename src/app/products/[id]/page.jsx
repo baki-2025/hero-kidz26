@@ -223,8 +223,8 @@ const ProductDetails = async ({ params }) => {
           </div>
 
           <div className="grid grid-cols-2 gap-4">
-            <CartButton product={product}></CartButton>
-            <button className="btn btn-secondary btn-lg rounded-2xl shadow-lg hover:shadow-secondary/50 transition-all flex-1">
+            <CartButton  product={product}></CartButton>
+            <button className="btn btn-primary">
               Buy Now
             </button>
           </div>
