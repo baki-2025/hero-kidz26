@@ -6,8 +6,7 @@ import Swal from "sweetalert2";
 
 const CartItem = ({
   item,
-  onIncrease,
-  onDecrease,
+ removeItem
   
 }) => {
     const {title, image, quantity, price,_id} = item;
@@ -23,7 +22,9 @@ const CartItem = ({
 }).then(async(result) => {
   if (result.isConfirmed){
     const result = await deleteItemsFromCart(_id);
+    
     if(result.success){
+      removeItem(_id);
         Swal.fire({
     title: "Deleted!",
     text: "Your file has been deleted.",
@@ -68,7 +69,7 @@ const CartItem = ({
           {/* Quantity Controller */}
           <div className="join">
             <button
-              onClick={() => onDecrease(item)}
+              // onClick={() => onDecrease(item)}
               className="btn btn-sm join-item btn-outline"
               disabled={item.quantity <= 1}
             >
@@ -80,7 +81,7 @@ const CartItem = ({
             </button>
 
             <button
-              onClick={() => onIncrease(item)}
+              // onClick={() => onIncrease(item)}
               className="btn btn-sm join-item btn-outline"
             >
               <FaPlus />
