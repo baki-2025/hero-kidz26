@@ -1,15 +1,20 @@
 "use client";
-import { deleteItemsFromCart } from "@/actions/server/cart";
+import {  decreaseItemDb, deleteItemsFromCart, increaseItemDb } from "@/actions/server/cart";
 import Image from "next/image";
+import { useState } from "react";
 import { FaPlus, FaMinus, FaTrash } from "react-icons/fa";
 import Swal from "sweetalert2";
 
 const CartItem = ({
   item,
- removeItem
+ removeItem,
+ updateQuantity
   
 }) => {
     const {title, image, quantity, price,_id} = item;
+
+    const [loading, setLoading] = useState(false);
+
     const handleDeleteCart = async() => {
          Swal.fire({
   title: "Are you sure?",
@@ -41,6 +46,25 @@ const CartItem = ({
 });
     };
 
+    const onIncrease = async() => {
+      setLoading(true);
+      const result = await increaseItemDb(_id, quantity);
+      if(result.success){
+        Swal.fire("success", "quantity increase","success");
+        updateQuantity(_id, quantity + 1);
+      }
+      setLoading(false);
+    };
+    const onDecrease = async() => {
+      setLoading(true);
+      const result = await decreaseItemDb(_id, quantity);
+      if(result.success){
+        Swal.fire("success", "quantity decrease","success");
+        updateQuantity(_id, quantity - 1);
+      }
+      setLoading(false);
+    };
+
   return (
     <div className="card card-side bg-base-100 shadow-md border border-base-200 p-4">
       {/* Product Image */}
@@ -69,9 +93,9 @@ const CartItem = ({
           {/* Quantity Controller */}
           <div className="join">
             <button
-              // onClick={() => onDecrease(item)}
+               onClick={onDecrease}
               className="btn btn-sm join-item btn-outline"
-              disabled={item.quantity <= 1}
+              disabled={item.quantity === 1 || loading}
             >
               <FaMinus />
             </button>
@@ -81,8 +105,9 @@ const CartItem = ({
             </button>
 
             <button
-              // onClick={() => onIncrease(item)}
+             onClick={onIncrease}
               className="btn btn-sm join-item btn-outline"
+              disabled={item.quantity === 10 || loading}
             >
               <FaPlus />
             </button>
@@ -90,7 +115,7 @@ const CartItem = ({
 
           {/* Remove Button */}
           <button
-            onClick={() => handleDeleteCart(item)}
+            onClick={handleDeleteCart}
             className="btn btn-sm btn-error text-white"
           >
             <FaTrash className="mr-2" />
