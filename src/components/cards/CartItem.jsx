@@ -16,6 +16,7 @@ const CartItem = ({
     const [loading, setLoading] = useState(false);
 
     const handleDeleteCart = async() => {
+      setLoading(true);
          Swal.fire({
   title: "Are you sure?",
   text: "You won't be able to revert this!",
@@ -27,6 +28,7 @@ const CartItem = ({
 }).then(async(result) => {
   if (result.isConfirmed){
     const result = await deleteItemsFromCart(_id);
+    
     
     if(result.success){
       removeItem(_id);
@@ -43,6 +45,7 @@ const CartItem = ({
   });
  }
 }
+setLoading(false);
 });
     };
 

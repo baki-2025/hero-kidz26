@@ -12,7 +12,7 @@ const CartPage = async () => {
   return (
     <div>
       <div className=''>
-       <h2 className='text-4xl py-4 font-bold border-1-8 border-primary pl-8'>
+       <h2 className='text-4xl py-4 font-bold border-l-8 border-primary pl-8'>
         My Cart
        </h2>
        
