@@ -50,47 +50,50 @@ const totalPrice = useMemo(
 
       {/* Left Side - Delivery Information */}
       <div className="lg:col-span-2">
-        <div className="bg-white rounded-xl shadow-lg border p-8">
+        <div className="bg-white rounded-xl shadow-lg  p-8">
           <h2 className="text-3xl text-center font-bold mb-6">
             Delivery Information
           </h2>
 
           <form onSubmit={handleSubmit} className="space-y-5">
-            {/* Full Name */}
-            <div>
-              <label className="label">
-                <span className="label-text font-medium">
-                  Full Name
-                </span>
-              </label>
-              <input
-                type="text"
-                name="name"
-                value={formData.name}
-                onChange={handleChange}
-                placeholder="Enter your full name"
-                className="input input-bordered w-full"
-                required
-              />
-            </div>
+            {/* Name & Email */}
+<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+  {/* Full Name */}
+  <div>
+    <label className="label">
+      <span className="label-text font-medium">
+        Full Name
+      </span>
+    </label>
+    <input
+      type="text"
+      name="name"
+      value={formData.name}
+      onChange={handleChange}
+      placeholder="Enter your full name"
+      className="input input-bordered w-full"
+      required
+    />
+  </div>
 
-            {/* Email */}
-            <div>
-              <label className="label">
-                <span className="label-text font-medium">
-                  Email
-                </span>
-              </label>
-              <input
-                type="email"
-                name="email"
-                value={formData.email}
-                onChange={handleChange}
-                placeholder="example@email.com"
-                className="input input-bordered w-full"
-                required
-              />
-            </div>
+  {/* Email */}
+  <div>
+    <label className="label">
+      <span className="label-text font-medium">
+        Email
+      </span>
+    </label>
+    <input
+      type="email"
+      name="email"
+      value={formData.email}
+      onChange={handleChange}
+      placeholder="example@email.com"
+      className="input input-bordered w-full"
+      required
+    />
+  </div>
+</div>
 
             {/* Contact */}
             <div>
@@ -157,7 +160,7 @@ const totalPrice = useMemo(
 
       {/* Right Side - Order Summary */}
       <div className="lg:col-span-1">
-        <div className="bg-white rounded-xl shadow-lg border p-6 sticky top-24">
+        <div className="bg-white rounded-xl shadow-lg p-6 sticky top-24">
           <h2 className="text-2xl text-center font-bold mb-5">
             Order Summary
           </h2>

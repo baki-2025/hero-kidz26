@@ -44,8 +44,8 @@ const Cart = ({cartItem=[]}) => {
 
       {/* Right Side - Summary */}
       <div className="lg:w-1/3">
-        <div className="bg-white rounded-xl shadow-lg border p-6 sticky top-5">
-          <h2 className="text-2xl font-bold border-b pb-3 mb-4 text-center">
+        <div className="bg-white rounded-xl shadow-lg p-6 sticky top-5">
+          <h2 className="text-2xl font-bold pb-3 mb-4 text-center">
             Order Summary
           </h2>
 
@@ -53,7 +53,7 @@ const Cart = ({cartItem=[]}) => {
             {items.map((item) => (
               <div
                 key={item._id}
-                className="border rounded-lg p-3"
+                className=" rounded-lg p-3"
               >
                 <h3 className="font-semibold text-lg">
                   {item.title}
