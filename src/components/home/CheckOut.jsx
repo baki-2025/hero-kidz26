@@ -1,15 +1,16 @@
 "use client";
 
+import { createOrder } from "@/actions/server/order";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
+import Swal from "sweetalert2";
 
 const CheckOut = ({ cartItems }) => {
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    contactNo: "",
-    deliveryInfo: "",
-    specialInstruction: "",
-  });
+  const session = useSession();
+  const router = useRouter();
+  
+  
 
 const totalItems = useMemo(
  ()=> cartItems.reduce((sum,item)=> sum + item.quantity, 0),
@@ -22,27 +23,35 @@ const totalPrice = useMemo(
 );
 
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
+  
 
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
-
-  const handleSubmit = (e) => {
+  const handleSubmit = async(e) => {
     e.preventDefault();
 
-    const order = {
-      ...formData,
-      cartItems,
-    };
+    const form = e.target;
+    const payload = {
+       name:form.name.value,
+       email:form.email.value,
+       contact:form.contactNo.value,
+       address:form.deliveryInfo.value,
+       instruction:form.specialInstruction.value,
+    }
 
-    console.log(order);
+    const result = await createOrder(payload);
 
-    // TODO: Send order to server
+    if(result.success){
+    Swal.fire("success","Order added", "success");
+    router.push("/");
+    } else{
+      Swal.fire("error", "Something went wrong", "error");
+      router.push("/cart");
+    }
+    
   };
+
+  if(session.status=="loading"){
+    return <h2>Loading.. </h2>;
+  }
 
   return (
   <div className="max-w-7xl mx-auto px-4 py-10">
@@ -68,11 +77,12 @@ const totalPrice = useMemo(
     <input
       type="text"
       name="name"
-      value={formData.name}
-      onChange={handleChange}
+      value={session?.data?.user?.name}
+      //onChange={handleChange}
       placeholder="Enter your full name"
       className="input input-bordered w-full"
       required
+      readOnly
     />
   </div>
 
@@ -86,14 +96,15 @@ const totalPrice = useMemo(
     <input
       type="email"
       name="email"
-      value={formData.email}
-      onChange={handleChange}
+      value={session?.data?.user?.email}
+      
       placeholder="example@email.com"
       className="input input-bordered w-full"
       required
+      readOnly
     />
-  </div>
-</div>
+     </div>
+     </div>
 
             {/* Contact */}
             <div>
@@ -105,8 +116,7 @@ const totalPrice = useMemo(
               <input
                 type="tel"
                 name="contactNo"
-                value={formData.contactNo}
-                onChange={handleChange}
+               
                 placeholder="01XXXXXXXXX"
                 className="input input-bordered w-full"
                 required
@@ -123,8 +133,7 @@ const totalPrice = useMemo(
               <textarea
                 rows={4}
                 name="deliveryInfo"
-                value={formData.deliveryInfo}
-                onChange={handleChange}
+               
                 placeholder="House No, Road, Area, District..."
                 className="textarea textarea-bordered w-full"
                 required
@@ -141,8 +150,7 @@ const totalPrice = useMemo(
               <textarea
                 rows={3}
                 name="specialInstruction"
-                value={formData.specialInstruction}
-                onChange={handleChange}
+               
                 placeholder="Optional (Call before delivery)"
                 className="textarea textarea-bordered w-full"
               />
@@ -152,7 +160,7 @@ const totalPrice = useMemo(
               type="submit"
               className="btn btn-primary w-full"
             >
-              CheckOut
+              CheckOut With Cash On Delivery
             </button>
           </form>
         </div>

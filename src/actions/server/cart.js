@@ -1,125 +1,175 @@
 "use server";
+
 import { authOptions } from "@/lib/authOption";
+import { collections, dbConnect } from "@/lib/dbConnect";
 import { ObjectId } from "mongodb";
 import { getServerSession } from "next-auth";
-import { revalidatePath } from "next/cache";
 import { cache } from "react";
 
-const { dbConnect, collections } = require("@/lib/dbConnect");
-const cartCollection = dbConnect(collections.CART);
+const getCartCollection = async () => {
+  return await dbConnect(collections.CART);
+};
 
+// Add to Cart
 export const handleCart = async ({ product, inc = true }) => {
-  const cartCollection = await dbConnect(collections.CART);
   const { user } = (await getServerSession(authOptions)) || {};
-  if (!user) return { success: false };
 
-  //getCartItem->user.email && productId
-  const query = { email: user?.email, productId: product?._id };
+  if (!user) {
+    return { success: false, message: "Unauthorized" };
+  }
 
-  const isAdded = await cartCollection.findOne(query);
+  const cartCollection = await getCartCollection();
 
-  if (isAdded) {
-    //if Exist:Update Cart
+  const query = {
+    email: user.email,
+    productId: product._id,
+  };
 
-    const updatedData = {
+  const existingItem = await cartCollection.findOne(query);
+
+  if (existingItem) {
+    const result = await cartCollection.updateOne(query, {
       $inc: {
         quantity: inc ? 1 : -1,
       },
-    };
+    });
 
-    const result = await cartCollection.updateOne(query, updatedData);
-    return { success: Boolean(result.modifiedCount) };
-  } else {
-    //Not Exist:insert Cart
-    const newData = {
-      productId: product?._id,
-      email: user?.email,
-      title: product.title,
-      quantity: 1,
-      image: product.image,
-      price: product.price - (product.price * product.discount) / 100,
-      username: user?.name,
+    return {
+      success: result.modifiedCount > 0,
     };
-
-    const result = await cartCollection.insertOne(newData);
-    return { success: result.acknowledged };
   }
+
+  const newItem = {
+    productId: product._id,
+    email: user.email,
+    username: user.name,
+    title: product.title,
+    image: product.image,
+    quantity: 1,
+    price: product.price - (product.price * product.discount) / 100,
+  };
+
+  const result = await cartCollection.insertOne(newItem);
+
+  return {
+    success: result.acknowledged,
+  };
 };
 
-export const getCart = cache(async() => {
-  const cartCollection = await dbConnect(collections.CART);
+// Get Cart
+export const getCart = cache(async () => {
   const { user } = (await getServerSession(authOptions)) || {};
+
   if (!user) return [];
 
-  const query = { email: user?.email };
+  const cartCollection = await getCartCollection();
 
-  const result = await cartCollection.find(query).toArray();
+  const items = await cartCollection
+    .find({ email: user.email })
+    .toArray();
 
-   return result.map((item) => ({
+  return items.map((item) => ({
     ...item,
     _id: item._id.toString(),
   }));
 });
 
+// Delete Item
 export const deleteItemsFromCart = async (id) => {
   const { user } = (await getServerSession(authOptions)) || {};
-  if (!user) return {success: false};
 
-  if(id.length!= 24){
-    return{success: false};
+  if (!user) return { success: false };
+
+  if (!ObjectId.isValid(id)) {
+    return {
+      success: false,
+      message: "Invalid id",
+    };
   }
 
-  const query ={_id: new ObjectId(id) }
+  const cartCollection = await getCartCollection();
 
-  const result = (await cartCollection).deleteOne(query);
+  const result = await cartCollection.deleteOne({
+    _id: new ObjectId(id),
+  });
 
-  // if(Boolean(result.deletedCount)){
-  //   revalidatePath("/cart");
-  // }
-
-  return {success: Boolean(result.deletedCount) };
-  
+  return {
+    success: result.deletedCount > 0,
+  };
 };
 
-export const increaseItemDb = async(id, quantity) => {
+// Increase Quantity
+export const increaseItemDb = async (id, quantity) => {
   const { user } = (await getServerSession(authOptions)) || {};
-  if (!user) return {success: false};
 
-  if(quantity > 10){
-    return { success: false, message: "You can not buy 10 products at a time"};
+  if (!user) return { success: false };
+
+  if (quantity >= 10) {
+    return {
+      success: false,
+      message: "Maximum quantity is 10",
+    };
   }
 
-  const query ={_id: new ObjectId(id) }
+  const cartCollection = await getCartCollection();
 
-  const updatedData = {
+  const result = await cartCollection.updateOne(
+    { _id: new ObjectId(id) },
+    {
       $inc: {
         quantity: 1,
       },
-    };
+    }
+  );
 
-  const result = (await cartCollection).updateOne(query,updatedData);
-
-  return { success: Boolean(result.modifiedCount) }
+  return {
+    success: result.modifiedCount > 0,
+  };
 };
-export const decreaseItemDb = async(id, quantity) => {
-  const { user } = (await getServerSession(authOptions)) || {};
-  if (!user) return {success: false};
 
-  if(quantity <= 1){
-    return { success: false, message: "Quantity can not be empty"};
+// Decrease Quantity
+export const decreaseItemDb = async (id, quantity) => {
+  const { user } = (await getServerSession(authOptions)) || {};
+
+  if (!user) return { success: false };
+
+  if (quantity <= 1) {
+    return {
+      success: false,
+      message: "Quantity cannot be less than 1",
+    };
   }
 
-  const query ={_id: new ObjectId(id) }
+  const cartCollection = await getCartCollection();
 
-  const updatedData = {
+  const result = await cartCollection.updateOne(
+    { _id: new ObjectId(id) },
+    {
       $inc: {
         quantity: -1,
       },
-    };
+    }
+  );
 
-  const result = (await cartCollection).updateOne(query,updatedData);
-
-  return { success: Boolean(result.modifiedCount) }
+  return {
+    success: result.modifiedCount > 0,
+  };
 };
 
+// Clear Cart
+export const clearCart = async () => {
+  const { user } = (await getServerSession(authOptions)) || {};
 
+  if (!user) return { success: false };
+
+  const cartCollection = await getCartCollection();
+
+  const result = await cartCollection.deleteMany({
+    email: user.email,
+  });
+
+  return {
+    success: result.deletedCount > 0,
+    deletedCount: result.deletedCount,
+  };
+};
