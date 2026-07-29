@@ -80,7 +80,7 @@ const LoginForm = () => {
                             type="email"
                             required
                             className="input input-bordered w-full pl-10 focus:input-primary transition-all duration-300 rounded-xl"
-                            placeholder="your@email.com"
+                            placeholder="abz.147570@email.com"
                         />
                     </div>
                 </div>
