@@ -39,6 +39,7 @@ export const metadata = {
 
   icons: {
     icon: 'https://i.ibb.co.com/nqdjJ4ds/image.png',
+    apple:'https://i.ibb.co.com/nqdjJ4ds/image.png',
     width: 150,
     height: 100,
     alt: 'HeroKidz Logo',

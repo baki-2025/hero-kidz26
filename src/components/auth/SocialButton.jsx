@@ -48,7 +48,7 @@ const SocialButton = () => {
       <div className="flex flex-col sm:flex-row gap-3">
         <button
           onClick={handleSocialLogin}
-          className="btn btn-outline flex-1 gap-2 hover:bg-primary hover:text-primary-content transition-all duration-300"
+          className="btn btn-outline btn-primary w-full rounded-xl gap-2 transition-all duration-300 shadow-lg shadow-primary/20 "
         >
           <FaGoogle className="text-xl" />
           <span>Google</span>
